@@ -37,3 +37,26 @@ struct time_event
 	uint32_t _interval;
 	uint32_t _time_id; 
 };
+
+struct commu_head
+{
+	int _cmdid;
+	int _length;
+};
+
+/**
+ * @brief      the msg betwen the thread and main process
+ *             the _connfd is the TCP accept socket
+ */
+struct queue_msg
+{	
+	enum MSG_TYPE { NEW_CONN, STOP_THD };
+	MSG_TYPE _cmdType;
+	int _connfd;
+};
+
+#define COMMU_HEAD_LENGTH 8
+
+#define MSG_LENGTH_LIMIT (65536 - COMMU_HEAD_LENGTH)
+
+
