@@ -19,7 +19,7 @@ event_loop::event_loop()
 
 event_loop::~event_loop()
 {
-	::close(_epfd);
+	close(_epfd);
 }
 
 /*
@@ -31,14 +31,14 @@ event_loop::~event_loop()
  * }
  * todo maybe wil change in the future
  */
-void event_loop::add_ioev(int fd, io_callback* cb, int mask, void* args = NULL)
+void event_loop::add_ioev(int fd, io_callback* cb, int mask, void* args /*= NULL*/)
 {
 	int f_mask;
 	int op;
 	// step 1: where the fd is already in _io_evs
 	_ioevs_it it = _io_evs.find(fd);
 	// step 1-1: if not,the operation is add
-	if (it = _io_evs.end())
+	if (it == _io_evs.end())
 	{
 		f_mask = mask;
 		op = EPOLL_CTL_ADD;
@@ -67,7 +67,7 @@ void event_loop::add_ioev(int fd, io_callback* cb, int mask, void* args = NULL)
 	struct epoll_event event;
 	event.events = f_mask;
 	event.data.fd = fd;
-	int ret = ::epoll_ctl(_epfd, op, &event);
+	int ret = ::epoll_ctl(_epfd, op, fd, &event);
 	error_if(ret == -1, "epoll_ctl()");
 }
 
@@ -85,7 +85,7 @@ void event_loop::process_evs()
 		for(int i = 0; i < nfds; ++ i)
 		{
 			it = _io_evs.find(_fired_evs[i].data.fd);
-			io_event* ev = it->second;
+			io_event* ev = &(it->second);
 			// step 2-1: mask is EPOLLIN, then read
 			if(ev->_mask & EPOLLIN)
 			{

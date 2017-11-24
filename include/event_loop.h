@@ -17,7 +17,7 @@ public:
 	void del_ioev(int fd, int mask);
 
 	// de the io event from epoll and _io_evs by fd
-	void del_iove(int fd);
+	void del_ioev(int fd);
 
 	// start epoll
 	void process_evs();
