@@ -1,5 +1,5 @@
 #include "../include/tcp_conn.h"
-
+#include "../include/tcp_server.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
@@ -30,5 +30,5 @@ void tcp_conn::init(int connfd, event_loop* loop)
 
     _loop->add_ioev(_connfd, tcp_rcb, EPOLLIN, this);
 
-    //tcp_server::inc_conn();
+    tcp_server::inc_conn();
 }

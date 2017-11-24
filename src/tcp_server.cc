@@ -25,7 +25,7 @@ pthread_mutex_t tcp_server::_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 tcp_server::tcp_server(evens_loop* loop, const char* ip, uint16_t port)
 {
-	memset(&_connaddr, 0, sizeof(_connfd));
+	memset(&_connaddr, 0, sizeof(_connaddr));
 
 	// step 1: create socket bind and listening
 	_sockfd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_TCP);
@@ -40,7 +40,7 @@ tcp_server::tcp_server(evens_loop* loop, const char* ip, uint16_t port)
     ret = ::setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &opend, sizeof(opend));
     error_if(ret < 0, "setsockopt SO_REUSEADDR");
 
-    ret = ::bind(_sockfd, (const struct sockaddr*)&servaddr, sizeof servaddr);
+    ret = ::bind(_sockfd, (const struct sockaddr*)&servaddr, sizeof(servaddr));
     exit_if(ret == -1, "bind()");
 
     ret = ::listen(_sockfd, 500);
@@ -87,6 +87,20 @@ bool tcp_server::handle_normal_conn(int& fd)
     msg._connfd = fd;
     cq->send_msg(msg);
     return true;
+}
+
+void tcp_server::get_conn_num(int &cnt)
+{
+    ::pthread_mutex_lock(&_mutex);
+    cnt = _curr_conns;
+    ::pthread_mutex_unlock(&_mutex);
+}
+
+void tcp_server::inc_conn()
+{
+    ::pthread_mutex_lock(&_mutex);
+    _curr_conns ++;
+    ::pthread_mutex_unlock(&_mutex);
 }
 
 // the EPOLLIN of _sockfd

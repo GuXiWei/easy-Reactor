@@ -16,9 +16,12 @@ public:
 	bool handle_exception_conn();
 
 	// del with normal when connect
-	bool handle_normal_conn();
+	bool handle_normal_conn(int& fd);
 
-	static get_conn_num(int& cnt);
+	static void get_conn_num(int& cnt);
+
+	// conn ++
+	static void inc_conn();
 
 private:
 	int _sockfd;

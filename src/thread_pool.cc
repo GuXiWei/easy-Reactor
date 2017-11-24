@@ -1,4 +1,5 @@
 #include "../include/thread_pool.h"
+#include "../include/tcp_server.h"
 
 thread_pool::thread_pool(int thread_cnt): _thread_cnt(thread_cnt), _curr_index(0)
 {
@@ -41,7 +42,16 @@ void msg_coming_cb(event_loop* loop, int fd, void* args)
 		// step 2: if the msg type is a new onnect, then
 		if (msg._cmdType == queue_msg::NEW_CONN)
 		{
-			/* code */
+			tcp_conn* conn = tcp_server::conns[msg._connfd];
+			if (conn)
+			{
+				// new conn, add the fd to loop
+				conn->init(msg._cmdType, loop)
+			}
+			else
+			{
+				// ?
+			}
 		}
 	}
 }
